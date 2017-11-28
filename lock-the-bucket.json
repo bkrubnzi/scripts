@@ -1,0 +1,46 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Lockitup",
+            "Effect": "Deny",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectAcl"
+            ],
+            "Resource": "arn:aws:s3:::___BUCKET___/*",
+            "Condition": {
+                "StringEquals": {
+                    "s3:x-amz-acl": [
+                        "public-read",
+                        "public-read-write",
+                        "authenticated-read"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "DenyPublicReadGrant",
+            "Effect": "Deny",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectAcl"
+            ],
+            "Resource": "arn:aws:s3:::___BUCKET___/*",
+            "Condition": {
+                "StringLike": {
+                    "s3:x-amz-grant-read": [
+                        "*http://acs.amazonaws.com/groups/global/AllUsers*",
+                        "*http://acs.amazonaws.com/groups/global/AuthenticatedUs                                                                                                                                   ers*"
+                    ]
+                }
+            }
+        }
+    ]
+}
