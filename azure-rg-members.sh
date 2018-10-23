@@ -8,6 +8,6 @@ do
     echo "$az_group:"
     while IFS= read -r name
     do
-        echo $name
+        az ad user show --upn-or-object-id $name | jq -r '.displayName'
     done <<< "$NAMES"
 done <<< "$AZ_GROUPS"
