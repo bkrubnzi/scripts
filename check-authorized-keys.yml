@@ -1,0 +1,32 @@
+ - ping:
+  - s3:
+      region: us-east-2
+      bucket: leo-pks
+      mode: get
+      object: "/{{ item }}"
+      dest: "host_vars/{{ item }}"
+      overwrite: different
+    with_items: "{{ authorized_public_keys }}"
+    delegate_to: localhost
+    run_once: True
+    register: s3_op
+
+  - authorized_key:
+      user: "{{ user }}" 
+      state: present
+      key: "{{ lookup('file','host_vars/provisioning-key.pub') }}"
+      exclusive: True
+
+  - authorized_key:
+      user: "{{ user }}" 
+      state: present
+      key: "{{ lookup('file', item.invocation.module_args.dest) }}"
+      exclusive: False
+    with_items: "{{ s3_op.results }}"
+
+  - name: Cleanup public keys
+    file:
+      path: "{{ item.invocation.module_args.dest }}"
+      state: absent
+    with_items: "{{ s3_op.results }}"
+    delegate_to: localhost
