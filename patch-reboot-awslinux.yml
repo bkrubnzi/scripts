@@ -1,0 +1,29 @@
+ - wait_for_connection:
+      timeout: 360 
+
+  - wait_for:
+      path: /var/log/cloud-init.log
+      search_regex: '^.*finished at.*'
+      state: present
+      timeout: 360
+  - yum:
+      state: latest
+      name: '*'
+  - get_url:
+      url: "https://raw.githubusercontent.com/rpm-software-management/yum-utils/master/needs-restarting.py"
+      dest: /tmp/needs-restarting.py
+      mode: 0755
+  - command: /tmp/needs-restarting.py -r
+    failed_when: False
+    register: reboot_required
+  - debug:
+      var: reboot_required
+
+  - command: /sbin/shutdown -r 1
+    when: reboot_required.rc == 1
+    register: restarted
+
+  - wait_for_connection:
+      delay: 60
+      timeout: 360
+    when: restarted.changed
