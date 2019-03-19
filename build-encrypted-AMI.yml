@@ -1,0 +1,37 @@
+---
+- name: Build an encrypted AMI 
+  hosts: localhost
+  gather_facts: False
+
+  tasks:
+
+  - ec2_ami_find:
+      virtualization_type: hvm
+      region: "{{ region }}"
+      name: "{{ Source_AMI_Name }}"
+      owner: "{{ Source_AMI_Owner }}"
+      sort: creationDate
+      sort_order: descending
+      sort_end: 1
+    register: Latest_AMI
+#  - debug:
+#      var: Latest_AMI.results[0].ami_id
+
+  - ec2_ami_copy:
+      source_region: "{{ region }}"
+      region: "{{ region }}"
+      source_image_id: "{{ Latest_AMI.results[0].ami_id }}"
+      name: "{{ Dest_AMI_name }}"
+      encrypted: True
+      wait: yes
+      tags:
+        Name: "{{ ami_name }}"
+    register: image_id
+
+  - lineinfile:
+      dest: ../host_vars/ami_variables.yml
+      line: "Encrypted_AMI: {{ image_id.image_id }}"
+      state: present
+
+  - set_fact:
+      Encrypted_AMI: "{{ image_id.image_id }}"
