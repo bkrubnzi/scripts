@@ -4,7 +4,7 @@
 # - docker compose
 # - 4GB available RAM
 # 1) Copy the file into its own directory and run the "docker-compose up" command
-# 2) Open kinbana by visiting http://localhost:5601
+# 2) Open kinbana by visiting http://localhost:8080
 # 3) Install a sample data set and enjoy!
 
 
