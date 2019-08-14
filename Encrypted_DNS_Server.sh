@@ -12,6 +12,7 @@ systemctl daemon-reload
 ## Start up the container ##
 docker run -v /home/**/dns-crypt-config/zones:/opt/unbound/etc/unbound/zones --ulimit nofile=90000:90000 --name=dnscrypt-server --net=host jedisct1/dnscrypt-server init -N example.net -E ***REMOVED***.16.*.*:443
 docker start dnscrypt-server
+docker update --restart=unless-stopped dnscrypt-server
 ## --------------------- ##
 
 ### Put the following lines in dnscrypt-proxy.toml ###
@@ -29,4 +30,11 @@ docker start dnscrypt-server
 /opt/dnscrypt-proxy/dnscrypt-proxy -service start
 ### ------------------------  ###
 
+### Configure your firewall ###
+firewall-cmd --list-all
+firewall-cmd --permanent --add-service=dns
+firewall-cmd --add-port=53/tcp
+firewall-cmd --add-port=53/udp
+firewall-cmd --reload
+### ----------------------- ###
 
