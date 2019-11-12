@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Monitor incoming traffic on port 53 ##
-sudo tcpdump -s0 -lvni any 'udp port 53'
+sudo tcpdump -s0 -lvni any 'udp port 53' | grep -E -o "(([a-zA-Z](-?[a-zA-Z0-9])*)\.)+[a-zA-Z]{2,}"
 
 ### Turn off dnsmasq ###
 systemctl stop dnsmasq
