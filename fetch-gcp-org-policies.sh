@@ -1,3 +1,6 @@
+# Use this command to browse the org policies:
+# DOCUMENTS=`find ~/[ORG_NAME]/ -name *json`;while IFS= read -r document;do echo "Policy: $document";cat $document | jq;done <<< "$DOCUMENTS"
+
 #!/bin/bash
 
 find_children() {
