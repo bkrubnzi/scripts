@@ -1,3 +1,6 @@
+# To find where a user is getting his or her access, run the following command:
+# DOCUMENTS=`find ~/[ORG_NAME]/ -name *json`;while IFS= read -r document;do echo "Policy: $document";cat $document | jq '.bindings[].members[]';done <<< "$DOCUMENTS"
+
 #!/bin/bash
 
 find_children() {
