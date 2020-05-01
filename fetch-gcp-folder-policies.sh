@@ -11,7 +11,7 @@ find_children() {
                         if [ "$PROJECT_IDS" ]; then
                                 while IFS= read -r project_id;do
                                         gcloud projects get-iam-policy $project_id --format json > $project_id.json
-                                done <<< "$PROJECT_NAMES"
+                                done <<< "$PROJECT_IDS"
                         fi
                         SUB_FOLDERS=`gcloud resource-manager folders list --folder $sub_folder --format json | jq -r '.[] | .name' | sed -e 's/.*\///'`
                         if [ "$SUB_FOLDERS" ];then
