@@ -10,7 +10,7 @@ NEW_GROUP=""
 
 find_children() {
                 while IFS= read -r sub_folder;do
-                        BINDINGS=`gcloud resource-manager folders get-iam-policy $sub_folder --flatten="bindings[].members" --filter="bindings.members:${GROUP_TO_MIRRO}" | grep role |sed -e 's/role: //'`
+                        BINDINGS=`gcloud resource-manager folders get-iam-policy $sub_folder --flatten="bindings[].members" --filter="bindings.members:${GROUP_TO_MIRROR}" | grep role |sed -e 's/role: //'`
                         for role in ${BINDINGS}
                         do
                         gcloud resource-manager folders add-iam-policy-binding $sub_folder --quiet --member="group:${NEW_GROUP}" --role="${role}"
