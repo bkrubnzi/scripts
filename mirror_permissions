@@ -12,7 +12,7 @@ find_children() {
                         BINDINGS=`gcloud resource-manager folders get-iam-policy $sub_folder --flatten="bindings[].members" --filter="bindings.members:${OLD_CSG}" | grep role |sed -e 's/role: //'`
                         for role in ${BINDINGS}
                         do
-                        gcloud resource-manager folders add-iam-policy-binding $sub_folder --member="group:${NEW_CSG}" --role="${role}"
+                        gcloud resource-manager folders add-iam-policy-binding $sub_folder --quiet --member="group:${NEW_CSG}" --role="${role}"
                         echo "Set ${role} on ${sub_folder} for ${NEW_GROUP}"
                         done
                         PROJECT_IDS=`gcloud projects list --filter=" parent.id: '$sub_folder' " --format json | jq -r '.[] | .projectId'`
@@ -21,7 +21,7 @@ find_children() {
                                         BINDINGS=`gcloud projects get-iam-policy $project_id --flatten="bindings[].members" --filter="bindings.members:${OLD_CSG}" | grep role |sed -e 's/role: //'`
                                         for role in ${BINDINGS}
                                         do
-                                        gcloud projects add-iam-policy-binding $project_id --member="group:${NEW_CSG}" --role="${role}"
+                                        gcloud projects add-iam-policy-binding $project_id --quiet --member="group:${NEW_CSG}" --role="${role}"
                                         echo "Set ${role} on ${project_id} for ${NEW_GROUP}"
                                         done
                                 done <<< "$PROJECT_IDS"
@@ -40,7 +40,7 @@ ORG_NAME=`gcloud organizations describe $ORG_ID --format json | jq -r '.displayN
 BINDINGS=`gcloud organizations get-iam-policy $ORG_ID --flatten="bindings[].members" --filter="bindings.members:${OLD_CSG}" | grep role |sed -e 's/role: //'`
 for role in ${BINDINGS}
 do
-gcloud organizations add-iam-policy-binding $ORG_ID --member="group:${NEW_CSG}" --role="${role}"
+gcloud organizations add-iam-policy-binding $ORG_ID --quiet --member="group:${NEW_CSG}" --role="${role}"
 echo "Set ${role} on ${ORG_ID} for ${NEW_GROUP}"
 done
 SUB_FOLDERS=`gcloud resource-manager folders list --organization $ORG_ID --format json | jq -r '.[] | .name' | sed -e 's/.*\///'`
