@@ -23,7 +23,7 @@ find_children() {
                                         for role in ${BINDINGS}
                                         do
                                         gcloud projects add-iam-policy-binding $project_id --quiet --member="group:${NEW_GROUP}" --role="${role}"
-                                        echo "Set ${role} on ${project_id} for ${NEW_GROUP}"csg
+                                        echo "Set ${role} on ${project_id} for ${NEW_GROUP}"
                                         done
                                 done <<< "$PROJECT_IDS"
                         fi
