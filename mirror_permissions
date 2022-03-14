@@ -14,7 +14,7 @@ find_children() {
                         for role in ${BINDINGS}
                         do
                         gcloud resource-manager folders add-iam-policy-binding $sub_folder --member="group:${NEW_CSG}" --role="${role}"
-                        echo "set ${role} on ${sub_folder} for jeremy"
+                        echo "Set ${role} on ${sub_folder} for ${NEW_GROUP}"
                         done
                         PROJECT_IDS=`gcloud projects list --filter=" parent.id: '$sub_folder' " --format json | jq -r '.[] | .projectId'`
                         if [ "$PROJECT_IDS" ]; then
@@ -23,7 +23,7 @@ find_children() {
                                         for role in ${BINDINGS}
                                         do
                                         gcloud projects add-iam-policy-binding $project_id --member="group:${NEW_CSG}" --role="${role}"
-                                        echo "set ${role} on ${project_id} for jeremy"
+                                        echo "Set ${role} on ${project_id} for ${NEW_GROUP}"
                                         done
                                 done <<< "$PROJECT_IDS"
                         fi
@@ -42,7 +42,7 @@ BINDINGS=`gcloud organizations get-iam-policy $ORG_ID --flatten="bindings[].memb
 for role in ${BINDINGS}
 do
 gcloud organizations add-iam-policy-binding $ORG_ID --member="group:${NEW_CSG}" --role="${role}"
-echo "doing org"
+echo "Set ${role} on ${ORG_ID} for ${NEW_GROUP}"
 done
 SUB_FOLDERS=`gcloud resource-manager folders list --organization $ORG_ID --format json | jq -r '.[] | .name' | sed -e 's/.*\///'`
 find_children $SUB_FOLDERS
