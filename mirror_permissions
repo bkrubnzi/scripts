@@ -1,0 +1,48 @@
+# To find where a user is getting his or her access, run the following command:
+# DOCUMENTS=`find ~/[ORG_NAME]/ -name *json`;while IFS= read -r document;do echo "Policy: $document";cat $document | jq '.bindings[].members[]';done <<< "$DOCUMENTS"
+
+#!/bin/bash
+
+# format of group:mygroup@example.com
+GROUP_TO_MIRROR=""
+NEW_GROUP=""
+
+find_children() {
+                while IFS= read -r sub_folder;do
+                        folder_name=`gcloud resource-manager folders describe $sub_folder --format json | jq -r '.displayName' | sed 's/\ /_/g'`
+                        BINDINGS=`gcloud resource-manager folders get-iam-policy $sub_folder --flatten="bindings[].members" --filter="bindings.members:${OLD_CSG}" | grep role |sed -e 's/role: //'`
+                        for role in ${BINDINGS}
+                        do
+                        gcloud resource-manager folders add-iam-policy-binding $sub_folder --member="group:${NEW_CSG}" --role="${role}"
+                        echo "set ${role} on ${sub_folder} for jeremy"
+                        done
+                        PROJECT_IDS=`gcloud projects list --filter=" parent.id: '$sub_folder' " --format json | jq -r '.[] | .projectId'`
+                        if [ "$PROJECT_IDS" ]; then
+                                while IFS= read -r project_id;do
+                                        BINDINGS=`gcloud projects get-iam-policy $project_id --flatten="bindings[].members" --filter="bindings.members:${OLD_CSG}" | grep role |sed -e 's/role: //'`
+                                        for role in ${BINDINGS}
+                                        do
+                                        gcloud projects add-iam-policy-binding $project_id --member="group:${NEW_CSG}" --role="${role}"
+                                        echo "set ${role} on ${project_id} for jeremy"
+                                        done
+                                done <<< "$PROJECT_IDS"
+                        fi
+                        SUB_FOLDERS=`gcloud resource-manager folders list --folder $sub_folder --format json | jq -r '.[] | .name' | sed -e 's/.*\///'`
+                        if [ "$SUB_FOLDERS" ];then
+                                find_children $SUB_FOLDERS
+                        fi
+                done <<< "$SUB_FOLDERS"
+}
+
+
+
+ORG_ID=`gcloud organizations list --format json | jq -r '.[] | .name' | sed -e 's/.*\///'`
+ORG_NAME=`gcloud organizations describe $ORG_ID --format json | jq -r '.displayName'`
+BINDINGS=`gcloud organizations get-iam-policy $ORG_ID --flatten="bindings[].members" --filter="bindings.members:${OLD_CSG}" | grep role |sed -e 's/role: //'`
+for role in ${BINDINGS}
+do
+gcloud organizations add-iam-policy-binding $ORG_ID --member="group:${NEW_CSG}" --role="${role}"
+echo "doing org"
+done
+SUB_FOLDERS=`gcloud resource-manager folders list --organization $ORG_ID --format json | jq -r '.[] | .name' | sed -e 's/.*\///'`
+find_children $SUB_FOLDERS
