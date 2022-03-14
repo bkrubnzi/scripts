@@ -1,5 +1,5 @@
-# To find where a user is getting his or her access, run the following command:
-# DOCUMENTS=`find ~/[ORG_NAME]/ -name *json`;while IFS= read -r document;do echo "Policy: $document";cat $document | jq '.bindings[].members[]';done <<< "$DOCUMENTS"
+# To mirror roles between two groups in GCP. First, set GROUP_TO_MIRROR to be the group whose permissions you want to mirror. Secondly, set NEW_GROUP to the group
+# that will receive new roles based on the roles the current group has.
 
 #!/bin/bash
 
