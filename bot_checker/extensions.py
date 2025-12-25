@@ -31,7 +31,7 @@ def trace_client(ip, duration=30):
         # Check if tshark is available
         tshark_check = subprocess.run(["which", "tshark"], capture_output=True)
         if tshark_check.returncode != 0:
-            print("[!] tshark not found. Install with 'apt update && apt install tshark' or run inside ***REMOVED***.")
+            print("[!] tshark not found.")
             return
 
         sni_cmd = [
