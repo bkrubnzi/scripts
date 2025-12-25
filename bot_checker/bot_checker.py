@@ -32,7 +32,7 @@ def reverse_dns(ip):
     socket.setdefaulttimeout(DNS_TIMEOUT)
     try:
         name = socket.gethostbyaddr(ip)[0]
-        for suffix in [".***REMOVED***.internal", ".localdomain", ".lan"]:
+        for suffix in [".[DOMAIN]", ".localdomain", ".lan"]:
             name = name.replace(suffix, "")
         return name
     except:
