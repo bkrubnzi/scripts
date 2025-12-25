@@ -49,7 +49,7 @@ def parse_line(line):
             return None
         src = re.search(r'src=([^\s]+)', line).group(1)
         dst = re.search(r'dst=([^\s]+)', line).group(1)
-        if src.startswith("***REMOVED***.") or src.startswith("***REMOVED***."):
+        if src.startswith("[OCTET].") or src.startswith("[OCTET]."):
             return src, dst
     except:
         return None
